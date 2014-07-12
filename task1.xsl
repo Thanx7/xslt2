@@ -104,9 +104,7 @@
                   <xsl:value-of select="'list-style-type: none; padding-left: 100px;'" />
                 </xsl:attribute>
 
-                <li>
-                  <xsl:value-of select="unordered-list"/>
-                </li>
+                <xsl:value-of select="*[not(self::para)]"/>
               </ul>
             </xsl:if>    
 
@@ -119,28 +117,3 @@
 </xsl:template>
 
 </xsl:stylesheet>
-
-<!--
-        <xsl:if test="unordered-list">
-          <ul>
-            <xsl:attribute name="style">
-              <xsl:value-of select="'list-style-type: none; padding-left: 30px;'" />
-            </xsl:attribute>
-
-            <xsl:for-each select="list-item">
-              <li>
-                5
-                <xsl:value-of select="."/>
-                <xsl:if test="para">
-                  <p>
-                    <xsl:attribute name="style">
-                      <xsl:value-of select="'padding-left: 50px;'" />
-                    </xsl:attribute>
-                    <xsl:value-of select="*"/>
-                  </p>
-                </xsl:if>                
-              </li>
-            </xsl:for-each>          
-          </ul>
-        </xsl:if>
--->
