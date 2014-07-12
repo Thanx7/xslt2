@@ -12,6 +12,12 @@
   </h1>
 </xsl:template>
 
+<xsl:template match="h1">
+  <h1 style="font-weight: bold; font-size: 14px; font-family: Arial, sans-serif;">
+    <xsl:value-of select="."/>
+  </h1>
+</xsl:template>
+
 <xsl:template match="para">
   <p>
     <xsl:choose>
@@ -24,6 +30,21 @@
           </tr>
         </table>
       </xsl:when>
+
+      <xsl:when test="bold">
+        <xsl:attribute name="style">
+          <xsl:value-of select="'font-weight:bold;'" />
+        </xsl:attribute>
+        <xsl:value-of select="."/>
+      </xsl:when>
+
+      <xsl:when test="wlink">
+        <xsl:attribute name="target-url">
+          <xsl:value-of select="."/>
+        </xsl:attribute>
+        <xsl:value-of select="."/>
+      </xsl:when>
+
       <xsl:otherwise>
         <xsl:value-of select="."/>
       </xsl:otherwise>
@@ -41,30 +62,10 @@
   </table>
 </xsl:template>
 
-<xsl:template match="wlink">
-  <xsl:element name="a">
-      <xsl:attribute name="href">
-          <xsl:value-of select="@target-url"/>
-      </xsl:attribute>
-      <xsl:value-of select="@target-url"/>
-  </xsl:element>
-</xsl:template>
 
 
 
 
-
-
-
-
-
-<xsl:template match="event">
-  <title>
-    Event <xsl:value-of select="@id"/>
-  </title>
-  <xsl:apply-templates select="heading"/>
-  <xsl:apply-templates select="doc-level"/>
-</xsl:template>
 
 
 <xsl:template match="doc-level">
@@ -191,17 +192,6 @@
     </tbody>
   </xsl:if>
 
-</xsl:template>
-
-<xsl:template match="external-link">
-  <p>
-  <xsl:element name="a">
-      <xsl:attribute name="href">
-          <xsl:value-of select="@source"/>
-      </xsl:attribute>
-      <xsl:value-of select="@source"/>
-  </xsl:element>
-  </p>
 </xsl:template>
 
 </xsl:stylesheet>
