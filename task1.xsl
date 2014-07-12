@@ -20,35 +20,56 @@
 
 <xsl:template match="para">
   <p>
-    <xsl:choose>
-      <xsl:when test="attachment">
-        <table>
-          <tr>
-            <td style="border: 1px solid">
-              <xsl:value-of select="."/>
-            </td>
-          </tr>
-        </table>
-      </xsl:when>
 
-      <xsl:when test="bold">
+    <xsl:choose>
+
+    <xsl:when test="@align = 'left'">
+      <xsl:attribute name="style">
+        <xsl:value-of select="'text-align:left;'" />
+      </xsl:attribute>
+
+      <xsl:if test="italic">
+        <xsl:attribute name="style">
+          <xsl:value-of select="'font-style:italic;'" />
+        </xsl:attribute>
+      </xsl:if>
+
+      <xsl:if test="bold">
         <xsl:attribute name="style">
           <xsl:value-of select="'font-weight:bold;'" />
         </xsl:attribute>
-        <xsl:value-of select="."/>
-      </xsl:when>
+      </xsl:if>
+    <xsl:value-of select="."/>
+    </xsl:when>
 
-      <xsl:when test="wlink">
+    <xsl:when test="wlink">
+      <b>
+      <a href="#{@search-value}">...</a>
         <xsl:attribute name="target-url">
           <xsl:value-of select="."/>
         </xsl:attribute>
-        <xsl:value-of select="."/>
-      </xsl:when>
+      <xsl:value-of select="."/>
+      </b>
+    </xsl:when>
 
-      <xsl:otherwise>
-        <xsl:value-of select="."/>
-      </xsl:otherwise>
+    <xsl:when test="attachment">
+      <table>
+        <tr>
+          <td style="border: 1px solid">
+            <xsl:value-of select="."/>
+          </td>
+        </tr>
+      </table>
+    </xsl:when>
+
+    <xsl:otherwise>
+      <xsl:attribute name="style">
+        <xsl:value-of select="'padding-left: 50px;'" />
+      </xsl:attribute>
+      <xsl:value-of select="."/>
+    </xsl:otherwise>
     </xsl:choose>
+
   </p>
 </xsl:template>
 
@@ -62,136 +83,64 @@
   </table>
 </xsl:template>
 
-
-
-
-
-
-
-<xsl:template match="doc-level">
-<div style="padding: 5px;">
-  <xsl:if test="@position = 'center'">
+<xsl:template match="unordered-list">
+  <ul>
     <xsl:attribute name="style">
-      <xsl:value-of select="'text-align:center;'" />
+      <xsl:value-of select="'list-style-type: none; padding-left: 50px;'" />
     </xsl:attribute>
-  </xsl:if>
 
-  <xsl:if test="doc-level">
-    <xsl:for-each select="doc-level">
-      <div style="padding: 5px;">
-        <xsl:if test="@position = 'left'">
-          <xsl:attribute name="style">
-            <xsl:value-of select="'text-align:left;'" />
-          </xsl:attribute>
-        </xsl:if>
-
-        <xsl:for-each select="para">
+    <xsl:for-each select="list-item">
+      <li>
+        <xsl:if test="para">
           <p>
-            <xsl:if test="@type = 'text'">
-              <xsl:attribute name="style">
-                <xsl:value-of select="'font-style:italic;'" />
-              </xsl:attribute>
-            </xsl:if>
-            <xsl:if test="@type = 'comment'">
-              <xsl:attribute name="style">
-                <xsl:value-of select="'background-color:#cccccc; outline-offset:100px;'" />
-              </xsl:attribute>
-            </xsl:if>
+            <xsl:attribute name="style">
+              <xsl:value-of select="'padding-left: 50px;'" />
+            </xsl:attribute>
+            <xsl:value-of select="para"/>
 
-            <xsl:if test="date">
-            Date:
-            </xsl:if>
-            
-            <xsl:value-of select="."/>
+            <xsl:if test="unordered-list">
+              <ul>
+                <xsl:attribute name="style">
+                  <xsl:value-of select="'list-style-type: none; padding-left: 100px;'" />
+                </xsl:attribute>
+
+                <li>
+                  <xsl:value-of select="unordered-list"/>
+                </li>
+              </ul>
+            </xsl:if>    
+
           </p>
-        </xsl:for-each>
-
-      </div>
+        </xsl:if>
+      </li>
     </xsl:for-each>
-  </xsl:if>
 
-  <xsl:if test="table">
-    <table style="margin:auto; border: 1px solid;">
-      <xsl:apply-templates select="table"/>
-    </table>
-  </xsl:if>
-
-  <xsl:if test="para">
-      <xsl:for-each select="para">
-      <p>
-
-        <xsl:if test="@type = 'unordered-list'">
-          <ul>
-            <xsl:for-each select="list-item">
-              <li>
-                <xsl:value-of select="."/>
-              </li>
-            </xsl:for-each>
-          </ul>
-        </xsl:if>
-
-        <xsl:if test="@type = 'image'">
-            <xsl:for-each select="image">
-              <img>
-                <xsl:attribute name="src">
-                  <xsl:value-of select="@source" />
-                </xsl:attribute>
-                <xsl:attribute name="alt">
-                  <xsl:value-of select="@description" />
-                </xsl:attribute>
-                <xsl:attribute name="title">
-                  <xsl:value-of select="@description" />
-                </xsl:attribute>                                
-              </img>
-            </xsl:for-each>
-        </xsl:if>
-
-      </p>
-      </xsl:for-each>
-  </xsl:if>
-
-  <xsl:if test="external-link">
-    <xsl:apply-templates select="external-link"/>
-  </xsl:if>
-
-</div>
-</xsl:template>
-
-<xsl:template match="table">
-
-  <xsl:if test="table-heading">
-    <thead>
-      <tr>
-        <th style="color:#0000ff;">
-          <xsl:value-of select="table-heading"/>
-        </th>
-      </tr>
-    </thead>
-  </xsl:if>
-
-  <xsl:if test="table-row">
-    <tbody>
-      <xsl:for-each select="table-row">
-        <tr>
-          <xsl:if test="table-cell">
-            <xsl:for-each select="table-cell">
-
-              <td>
-                <xsl:if test="@style = 'bold'">
-                  <xsl:attribute name="style">
-                    <xsl:value-of select="'font-weight:bold;'" />
-                  </xsl:attribute>
-                </xsl:if>
-                <xsl:value-of select="."/>
-              </td>
-
-            </xsl:for-each>
-          </xsl:if>
-        </tr>
-      </xsl:for-each>
-    </tbody>
-  </xsl:if>
-
+  </ul>
 </xsl:template>
 
 </xsl:stylesheet>
+
+<!--
+        <xsl:if test="unordered-list">
+          <ul>
+            <xsl:attribute name="style">
+              <xsl:value-of select="'list-style-type: none; padding-left: 30px;'" />
+            </xsl:attribute>
+
+            <xsl:for-each select="list-item">
+              <li>
+                5
+                <xsl:value-of select="."/>
+                <xsl:if test="para">
+                  <p>
+                    <xsl:attribute name="style">
+                      <xsl:value-of select="'padding-left: 50px;'" />
+                    </xsl:attribute>
+                    <xsl:value-of select="*"/>
+                  </p>
+                </xsl:if>                
+              </li>
+            </xsl:for-each>          
+          </ul>
+        </xsl:if>
+-->
