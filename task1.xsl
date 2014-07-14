@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0"
-    xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+    xmlns:wkdoc="http://www.wkpublisher.com/xml-namespaces/document">
 
-<xsl:template match="/">
+<xsl:template match="/atlas-document/wkdoc:document">
    <xsl:apply-templates/>
 </xsl:template>
 
@@ -18,69 +19,30 @@
   </h1>
 </xsl:template>
 
-<xsl:template match="para">
-  <p>
-
-    <xsl:choose>
-
-    <xsl:when test="@align = 'left'">
-      <xsl:attribute name="style">
-        <xsl:value-of select="'text-align:left;'" />
-      </xsl:attribute>
-
-      <xsl:if test="italic">
-        <xsl:attribute name="style">
-          <xsl:value-of select="'font-style:italic;'" />
-        </xsl:attribute>
-      </xsl:if>
-
-      <xsl:if test="bold">
-        <xsl:attribute name="style">
-          <xsl:value-of select="'font-weight:bold;'" />
-        </xsl:attribute>
-      </xsl:if>
-    <xsl:value-of select="."/>
-    </xsl:when>
-
-    <xsl:when test="wlink">
-      <b>
-      <a href="#{@search-value}">...</a>
-        <xsl:attribute name="target-url">
-          <xsl:value-of select="."/>
-        </xsl:attribute>
-      <xsl:value-of select="."/>
-      </b>
-    </xsl:when>
-
-    <xsl:when test="attachment">
-      <table>
-        <tr>
-          <td style="border: 1px solid">
-            <xsl:value-of select="."/>
-          </td>
-        </tr>
-      </table>
-    </xsl:when>
-
-    <xsl:otherwise>
-      <xsl:attribute name="style">
-        <xsl:value-of select="'padding-left: 50px;'" />
-      </xsl:attribute>
-      <xsl:value-of select="."/>
-    </xsl:otherwise>
-    </xsl:choose>
-
-  </p>
+<xsl:template match="attachment">
+  <table>
+    <tr>
+      <td style="font-weight: bold; border: 1px solid #000000; color: #0000ff;">
+        <xsl:apply-templates/>
+      </td>
+    </tr>
+  </table>
 </xsl:template>
 
 <xsl:template match="note">
   <table style="width: 100%">
     <tr>
       <td style="border: 1px solid; padding: 30px 5px; background-color: #ccffff;">
-        <xsl:value-of select="."/>
+        <xsl:apply-templates/>
       </td>
     </tr>
   </table>
+</xsl:template>
+
+<xsl:template match="list-item">
+  <li>
+    <xsl:apply-templates/>
+  </li>
 </xsl:template>
 
 <xsl:template match="unordered-list">
@@ -89,31 +51,47 @@
       <xsl:value-of select="'list-style-type: none; padding-left: 50px;'" />
     </xsl:attribute>
 
-    <xsl:for-each select="list-item">
-      <li>
-        <xsl:if test="para">
-          <p>
-            <xsl:attribute name="style">
-              <xsl:value-of select="'padding-left: 50px;'" />
-            </xsl:attribute>
-            <xsl:value-of select="para"/>
-
-            <xsl:if test="unordered-list">
-              <ul>
-                <xsl:attribute name="style">
-                  <xsl:value-of select="'list-style-type: none; padding-left: 100px;'" />
-                </xsl:attribute>
-
-                <xsl:value-of select="*[not(self::para)]"/>
-              </ul>
-            </xsl:if>    
-
-          </p>
-        </xsl:if>
-      </li>
-    </xsl:for-each>
-
+    <xsl:apply-templates/>
   </ul>
+</xsl:template>
+
+<xsl:template match="para">
+  <p>
+    <xsl:apply-templates/>
+  </p>
+</xsl:template>
+
+<xsl:template match="italic">
+  <i>
+    <xsl:apply-templates/>
+  </i>
+</xsl:template>
+
+<xsl:template match="bold">
+  <b>
+    <xsl:apply-templates/>
+  </b>
+</xsl:template>
+
+<xsl:template match="wlink">
+  <xsl:element name="a">
+    <xsl:attribute name="href">
+        <xsl:value-of select="@target-url"/>
+    </xsl:attribute>
+    <xsl:attribute name="style">
+      <xsl:value-of select="'text-decoration: none;'" />
+    </xsl:attribute>    
+    <xsl:value-of select="."/>
+  </xsl:element>
+</xsl:template>
+
+<xsl:template match="cite-ref">
+  <b>
+    <xsl:attribute name="style">
+      <xsl:value-of select="'color: #0000ff;'" />
+    </xsl:attribute> 
+    <xsl:apply-templates/>
+  </b>
 </xsl:template>
 
 </xsl:stylesheet>
